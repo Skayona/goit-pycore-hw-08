@@ -1,10 +1,10 @@
 from address_book import Record, AddressBook
 from bot_exceptions import BirthdayError, MissingContactError, ExtendedValueError
+import pickle
 
 def input_error(func):
   def inner(*args, **kwargs):
     try:
-      print(args)
       return func(*args, **kwargs)
     except ValueError:
       return "Not all data is provided."
@@ -25,6 +25,9 @@ def get_record(book: AddressBook, name: str) -> Record:
 
 @input_error
 def parse_input(user_input: str) -> tuple[str, ...]:
+  if not user_input:
+    return ("",)
+
   user_input = user_input.strip()
   cmd, *args = user_input.split()
   cmd = cmd.lower()
@@ -36,14 +39,18 @@ def add_contact(args: list[str], book: AddressBook) -> str:
   name, phone, *_ = args
   record = book.find(name)
   message = "Contact updated."
+  is_new_contact = record is None
 
-  if record is None:
+  if is_new_contact:
     record = Record(name)
-    book.add_record(record)
-    message = "Contact added."
 
   if phone:
     record.add_phone(phone)
+
+  # Fixes an issue when phone number is incorrect and record was added before phone validation
+  if is_new_contact:
+    book.add_record(record)
+    message = "Contact added."
 
   return message
 
@@ -87,8 +94,19 @@ def show_all(book: AddressBook) -> str:
 
   return "\n".join([f"{record}" for record in book.values()])
 
+def save_data(book, filename="addressbook.pkl"):
+  with open(filename, "wb") as f:
+    pickle.dump(book, f)
+
+def load_data(filename="addressbook.pkl"):
+  try:
+    with open(filename, "rb") as f:
+      return pickle.load(f)
+  except FileNotFoundError:
+      return AddressBook()
+
 def main():
-  book = AddressBook()
+  book = load_data()
   print("Welcome to the assistant bot!")
 
   while True:
@@ -99,6 +117,7 @@ def main():
       case "hello":
         print("How can I help you?")
       case "close" | "exit":
+        save_data(book)
         print("Good bye!")
         break
       case "add":

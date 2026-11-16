@@ -80,6 +80,13 @@ class Record:
     return res
 
 class AddressBook(UserDict):
+  def __getstate__(self):
+    state = { **self.__dict__ }
+    return state
+
+  def __setstate__(self, state):
+    self.__dict__.update(state)
+
   def add_record(self, record: Record):
     name = record.name.value
     if name in self.data:
