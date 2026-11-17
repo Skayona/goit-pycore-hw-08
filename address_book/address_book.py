@@ -1,8 +1,9 @@
+import re
 from collections import UserDict
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-import re
-from bot_exceptions import ExtendedValueError, BirthdayError
+
+from bot_exceptions import BirthdayError, ExtendedValueError
 
 
 @dataclass

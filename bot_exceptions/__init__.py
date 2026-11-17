@@ -5,7 +5,7 @@ from .bot_exceptions import (
 )
 
 __all__ = [
+    "BirthdayError",
     "ExtendedValueError",
     "MissingContactError",
-    "BirthdayError",
 ]
