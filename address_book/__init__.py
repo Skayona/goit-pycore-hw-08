@@ -1,6 +1,6 @@
-from .address_book import  Record, AddressBook
+from .address_book import AddressBook, Record
 
 __all__ = [
-  "Record",
-  "AddressBook",
+    "Record",
+    "AddressBook",
 ]
